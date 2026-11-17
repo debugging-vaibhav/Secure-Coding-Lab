@@ -1,0 +1,27 @@
+rules:
+  - id: path-traversal-unchecked-open
+    languages: [python]
+    severity: ERROR
+    message: >-
+      User input from input() is joined into a file path
+      and opened without checking that the resolved path
+      stays inside the allowed folder
+      (path traversal, CWE-22 / OWASP A01:2021).
+    metadata:
+      cwe: "CWE-22: Path Traversal"
+      owasp: "A01:2021 - Broken Access Control"
+    patterns:
+      - pattern-inside: |
+          $NAME = input(...)
+          ...
+      - pattern-inside: |
+          $PATH = <... os.path.join($DIR, $NAME) ...>
+          ...
+      - pattern: open($PATH, ...)
+      - pattern-not-inside: |
+          if <... os.path.commonpath(...) ...>:
+              ...
+          elif $COND:
+              ...
+          else:
+              ...
